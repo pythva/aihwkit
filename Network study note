@@ -1,0 +1,63 @@
+ANN structure 
+- The basic building block is the neuron: this is just an input/output node.
+- Specifically, this neuron accepts an input denoted U
+and perform some math on U to convert
+U is converted to the desired output data Y
+- You can take advantage of activation functions such as Sigmoidal Functions
+Transform U. The way this activation function works is that if U is
+trivial, then the output will be dropped to 0 or if it is large
+You can simply take 1. There is a smooth curve between this 1 and 0
+Indicates the activation slope
+- Another function to use is the ReLU activation function, where it
+is a linear activation function whose lower bound is zero until
+a certain threshold. Once that threshold is reached, we can
+apply a linear growth function on U to match output Y
+
+
+ By stacking neurons in parallel or in series, we can achieve more complex
+function, we can apply multiple activation methods to the input. Then we can
+Get the output of this function to apply another layer of functionality
+To further transform it
+- You can add as many of these layers as you want to build
+A network that will be an artificial neural network (ANN), including
+Functional layers stacked in parallel
+- To go further, we can stack many of these artificial nerves
+The networks together form a deep neural network capable of
+Process and generate large parameters only from the training set
+Like CNN RNN
+
+Convolutional Neural Network(CNN):
+- Mainly used for image recognition and computer vision. it contains
+The convolutional layer takes the mask and slides it over
+image for local computation in the patch.
+-CNN can be derived from such a containing
+All the information needed to generate the image. go through
+stack the convolutional layers, then we can process the array
+
+convolutional is a technique of condensing the images without changing the main feature of the original images  for example we have:          1 1   1 1
+  					       1 1   1 1 
+					       2 2  2 2
+					       2 2  2 2  after the convolution we have: 					1  1 					2  2
+
+- Recurrent Neural Network(RNN)
+- For audio and time signals, it can resolve acoustic features
+Voice in time or other signals.
+- There can be feedback loops that generate more information through pushes
+The output goes back to the neuron for more computation
+- Simple time feedback to keep some
+Memories of past iterations that set it apart
+from a feedforward network.
+- This feedback loop mechanism is what gives recurrent neurons
+Opportunity to produce more.
+- LSTMs or Long Short Term Memory Networks for
+audio processing and dynamic systems, because
+it differs in time and memory
+
+Just like normal Ann, but instead of using multiple layers, the layers are use recursively. For example if the  network have 2 layers. The output of form the second layer will be re-enter the first first layer as input.
+
+So personal search:  LSTM(long short term memory): Dota 2 with Large Scale Deep Reinforcement Learning ,arXiv:1912.06680 [cs.LG]  (or arXiv:1912.06680v1 [cs.LG] for this version) https://doi.org/10.48550/arXiv.1912.06680
+
+To avoid the long term memory dependency. When using, for example, a RNN. When we need to make prediction based on the new learning information, but  we might make perfection based on really old training material. Which preventing the network form learning new things. 
+In the LSTM, when new material is received. It is not trained directly no the old model. But the old model combine with the new information and trained together.
+
+One of the important aspects that separate LSTM from "robot" is its learning process. The method of "reinforcement learning”( allowed the LSTM to process a large sequence of data instead of a point single data point. Unlike the traditional true or false statement that is assigned to each case, the allow learning of LSTM mode to be unlimited by the cases and the logic that the programmer sets. 	In the open AI scenario, the developer assigned weights for different events that will happen in the game( Dota 2 with Large Scale Deep Reinforcement Learning). Instead of feedback on true or false for individual behavior, the feedback is in the form of weight that is associated with the behaviors. For example, the winning of the game will have a rewarding weight of 5 and hero's death of -1; By doing this, the learning process of LSTM refers to the cognition development of real humans. For example, in the early stage of the model development.
