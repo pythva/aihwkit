@@ -1,0 +1,44 @@
+using note book to run assignment:
+which the assignment are:
+https://github.com/IBM/aihwkit/blob/master/notebooks/examples/analog_training_LeNet5_plot.ipynb
+https://github.com/IBM/aihwkit/blob/master/notebooks/examples/analog_training_LeNet5_TT.ipynb
+
+dw_min
+       Mean of the minimal update step sizes across devices  and directions•Defines  how many states we can have. dw_min= (w_max-w_min)/(#states)•For ReRAm:  10-1000 states is reasonable
+
+       A parameter  related  to the finite pulse size applied for each device coincidence.  If dw_minis very  small the neural network  weight resolution  is high (high number  of states). On the other  hand, if dw_minis high only few  pulses will drive the weight from its max value (w_max) to min value (w_min)
+
+dw_min_dtod
+
+		Device-to-device  std deviation of dw_min(in relative  units to dw_min)0
+
+		Device  to device  noise. device-to-device  variation is given in relative units.
+
+dw_min_std
+
+		Cycle-to-cycle variation size of the update step (in relative  units to dw_min)0-100%
+
+		Cycle to cycle noise. Cycle-to-cycle  variation is given in relative units.  For instance, setting of dw_min_stdof 0.1 would mean 10% spread around the mean and thus a resulting standard deviation (𝜎c-to-c)  of dw_min* dw_min_std.Try values in the range of 1%-100% 
+
+RPU
+
+changing the corresponding factor according the essay:
+
+in the section:
+Derivation of RPU Device Speciﬁcations
+
+for dw:
+
+While for large △w min the convergence is poor since it controls the standard deviation of the stochastic update rule, for smaller △w min the results are approaching the baseline model. The △w min smaller than 0.01 produces a classiﬁcation error of 2.3% at the end of 30 th epoch which is just 0.3% above the 2.0% classiﬁcation error of the baseline model.
+
+for dw_min_dtod:
+
+For stochastic models illustrated in Figure 3D, yet another randomness, a device-to-device variation in the incremental conductance change due to a single coincidence event △g min.
+. Results show that the algorithm is also robust against the device-to-device variation and an acceptable error penalty can be achieved for models with a standard deviation up to 110% of the mean value.
+
+for dw_min_std
+
+In order to estimate tolerance of the algorithm to noise during forward and backward cycles, we injected Gaussian noise to the results of vector-matrix multiplications with varying standard deviation.
+
+the algorithm can tolerate up to six times larger noise with a 60% standard deviation. The backward cycle is less tolerant with a 10% threshold
+
