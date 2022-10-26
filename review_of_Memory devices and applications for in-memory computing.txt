@@ -1,0 +1,34 @@
+Analog hardware: 
+
+2020 Nature Nanotechnology, Memory devices and applications for in-memory computing
+Traditional von Neumann computing systems involve separate processing and memory units. However, data movement is costly in terms of time and energy and this problem is aggravated by the recent explosive growth in highly data-centric applications related to artificial intelligence. This calls for a radical departure from the traditional systems and one such non-von Neumann computational approach is in-memory computing. Hereby certain computational tasks are performed in place in the memory itself by exploiting the physical attributes of the memory devices. Both charge-based and resistance-based memory devices are being explored for in-memory computing. In this Review, we provide a broad overview of the key computational primitives enabled by these memory devices as well as their applications spanning scientific computing, signal processing, optimization, machine learning, deep learning and stochastic computing.
+
+In-memory computing is an alternate approach where certain computational tasks are performed in place in the memory itself organized as a computational memory unit.
+
+in-memory computing also has the potential to significantly improve the computational time complexity associated with certain computational tasks. This arises mostly from the massive parallelism afforded by a dense array of millions of memory devices performing computation.
+
+Charge-based memory:
+A range of in-memory logic and arithmetic operations can be performed using both SRAM and DRAM. Capacitive charge redistribution serves as the foundation for many of them, in particular storing and sharing of charge across multiple storage nodes. In DRAM, simultaneous reading of devices along multiple rows can be used to execute basic Boolean functions within the memory array
+
+SRAM arrays can also be used for matrix-vector multiplication (MVM) operations, Ax = b, where A is the data matrix, x is the input vector, and b is the output vector21–23 . If the elements of A and x are limited to signed binary values, the multiply operation is simplified to a combination of XNOR and ADD functions. Here, a 12T SRAM cell can be designed to execute XNOR operations within every memory cell21 . In cases where x is non-binary, one approach is to employ capacitors in addition to the SRAM cells22–24 . It was recently shown how 6-bit inputs can be multiplied with binary matrices stored in SRAM22.
+
+Resistance-based memory:  Resistive random access memory (RRAM) devices comprise metal–insulator–metal (MIM) stacks (Fig. 3a) and the resistive switching process typically involves the creation and disruption of conductive filaments (CF) comprising a localized concentration of defects.
+
+One of the attributes of memristive devices that can be exploited for computation is their non-volatile binary storage capability. Logical operations are enabled through the interaction between the voltage and resistance state variables40 . One particularly interesting characteristic of certain memristive logic families is statefulness, where the Boolean variable is represented solely in terms of the resistance states41–43.
+
+The non-volatile storage capability, in particular, the ability to store a continuum of conductance values, facilitates the key computational primitive of analogue MVM51–53.
+
+In signal processing and machine learning:  The idea is to encode a transform matrix, for example, a discrete cosine transform, as the conductance values of devices organized in a crossbar array. The image pixel intensities, represented as voltages, are applied to the crossbar first row by row and, in a second step,column by column. The compression is then performed by keeping only a certain ratio of the highest coefficients of the transformed image and discarding the rest.
+
+One is sparse dictionary learning, a learning framework in which a sparse representation of input data is obtained in the form of a linear combination of basic elements, which form the so-called dictionary of features. As opposed to the transform coding approach described earlier, both the dictionary and the sparse representation are learned from the input data. If the learned dictionary is mapped onto device conductance values in a crossbar array, it is possible to obtain the sparse representation using the iterative-shrinking threshold or locally competitive algorithms
+
+Deep learning
+
+A DNN can be mapped onto multiple crossbar arrays of memory devices that communicate with each other as illustrated in Fig. 6a. A layer of the DNN can be implemented on (at least) one crossbar, in which the weights W ij of that layer are stored in the charge or conductance state of the memory devices at the crosspoints. The propagation of data through that layer is performed in a single step by inputting the data to the crossbar rows and deciphering the results at the columns.
+The results are then passed through the neuron nonlinear function and input to the next layer.
+
+The efficient MVM realized via in-memory computing is very attractive for inference-only applications, where data is propagated through the network on offline-trained weights.
+
+In-memory computing can also be used in the context of supervised training of DNNs with backpropagation. This training involves three stages: forward propagation of labelled data through the network, backward propagation of the error gradients from output to the input of the network, and weight update based on the computed gradients with respect to the weights of each layer.
+
+The main difference between SNNs and the non-spiking neural networks discussed so far is that SNN neurons compute with asynchronous spikes that are temporally precise, as opposed to continuous-valued activations that operate on a common clock cycle. Hence, SNNs are ideally suited for processing spatio-temporal event-driven information from neuromorphic sensors. 
