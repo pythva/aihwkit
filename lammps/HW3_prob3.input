@@ -1,0 +1,34 @@
+# HW3_prob3 NVE ensemble
+
+units         lj
+dimension     2
+region        box block 0 25 0 25 -0.5 0.5 # a box
+create_box    1 box
+create_atoms  1 random 500 13487 box overlap 1.0 #
+pair_style    lj/cut 2.5
+pair_coeff    1 1 1.0 1.0 2.5 # give a box with sizeof 500 so the atoms can evenly spread
+
+velocity all create 300.0 4928459 rot yes dist gaussian # ensure a Maxwell-Boltzmann distribution.
+
+
+neighbor	0.3 bin # Building neighbour lists using the linked cell method with a skin layer of 0.3
+neigh_modify	every 20 delay 0 check no # Frequency of building neighbour lists
+run_style verlet # velocity Verlet algorithm
+
+
+compute         msdcal all msd #Compute msd
+compute 	myRDF all rdf 50 # Compute rdf
+fix 		4 all ave/time 100 100 50000 c_myRDF file RDF.data mode vector # output average rdf at the last timestep (50000) as an average of the last 100 frames in steps of 100 
+fix             5 all ave/time 1 1 1 c_msdcal[4] file MSD.data mode scalar #4th column of the compute is the total msd
+thermo          10  # Frequency of outputting thermodynamic data
+thermo_style    custom step temp ke pe etotal vol press pxx pyy pzz  lx ly lz enthalpy # Thermodynamic data to output
+timestep        0.1 # Timestep 
+
+dump            3 all custom 20000 dump.data id type x y z  # dump the Coordinates data file in custom format.
+
+#fix             1 all npt temp 0.1 0.1 1 iso 0 0 100
+fix             1 all nve
+#fix              1 all nvt temp 0.1 0.1 1 # nvt ensemble. The first number after temp is the initial temperature, the second temperature after temp is the final ensemble temperature and the third number is the temperature damping factor Q.
+run		 50000 # Number of steps to run the simulation
+
+#write_data      data.input

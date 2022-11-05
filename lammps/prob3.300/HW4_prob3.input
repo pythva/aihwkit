@@ -1,0 +1,28 @@
+# HW4-prob3.input
+# Calculate the coefficient of thermal expansion (CTE) for Copper
+# Any line after '#' has been commented out
+
+units		metal  # metal implies quantities have units (distance: angstrom, time: picoseconds, energy: eV, temperature: K, pressure: bars )
+atom_style	atomic # Defining attributes associated with the atoms
+
+
+read_data       Cu_relaxed_lattice.input # reading in the coordinates
+
+pair_style	eam/fs # Defining the type of  potential as EAM
+pair_coeff	* * CuZr_mm.eam.fs Cu # Defining the coefficients of the interaction between types of atoms using an external potential file
+
+neighbor	0.3 bin
+neigh_modify	every 20 delay 0 check no # frequency of creating neighbour lists
+
+velocity        all create 300 87287 # Defining the velocity of the atoms to set the temperature. The final number is a random seed required for the probability distribution while the quantity before that is the temperature
+
+thermo          10 # Defining the frequency of output of thermodynamic data.
+thermo_style    custom step temp ke pe etotal vol press pxx pyy pzz  lx ly lz enthalpy #Defining the thermodynamic quantities to output.
+timestep        0.001 # timestep is in picoseconds for units metal
+
+dump            3 all custom 10000 dump.data id type x y z # Coordinates data file
+
+fix             1 all npt temp 300 300 0.1 iso 0.0 0.0 5 # !!! Equilibrating at 300 K, change both the values after temp to the desired temperature
+run             25000
+unfix           1
+

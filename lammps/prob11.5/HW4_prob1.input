@@ -1,0 +1,49 @@
+# HW4_Prob1.input
+
+units		lj  # lj implies quantities are in LJ internal units
+atom_style	atomic # Defining attributes associated with the atoms
+
+
+region          simbox  block 0 8 0 8 0 8
+create_box	1 simbox  # Create 1 types of atoms in the region simbox
+create_atoms    1 random 250 676 simbox # create atoms of type 1 randomly in simbox
+mass		* 1.0     # Defining the mass of all atoms
+
+velocity	all create 0.1 87287 # Defining the velocity of the atoms to set the temperature. The final number is a random seed required for the probability distribution while the quantity before that is the temperature
+
+pair_style	lj/cut 4 # Defining the lj potential with a interaction cutoff of 4
+pair_coeff	1 1 1.0 1.0 4 # Defining the coefficients of the interaction between type 1 and type 1
+pair_coeff      2 2 1.0 1.0 4 # Defining the coefficients of the interaction between type 2 and type 2
+pair_coeff      1 2 4.0 1.0 4 # Defining the coefficients of the interaction between type 1 and type 2
+
+neighbor	0.3 bin # Building neighbour lists using the linked cell method with a skin layer of 0.3
+neigh_modify	every 20 delay 0 check no # Frequency of building neighbour lists
+
+
+thermo          1000  # Frequency of outputting thermodynamic data
+thermo_style    custom step temp ke pe etotal vol press pxx pyy pzz  lx ly lz enthalpy # Thermodynamic data to output
+timestep        0.001 # Timestep 
+
+fix             1 all nve/limit 0.1 # move atoms to prevent overlap due to initial random distribution
+run             10000
+unfix           1
+
+fix             1 all nvt temp 0.1 0.1 1 # Equilibrate at low temperature (Do not change this)
+run             20000
+unfix           1
+
+fix             1 all nvt temp 0.1 1.5 1 # Increase to higher temperature (!!! Raise the second value after temp to desired higher temperature)
+run             20000
+unfix           1
+
+reset_timestep  0
+log             log.equil
+
+compute 	myRDF all rdf 50 1 1 1 2 2 1 2 2 # Compute rdf
+fix 		4 all ave/time 100 100 100000 c_myRDF file RDF.data mode vector # output average rdf at the last step (100000)s as an average of the last 100 frames in steps of 100 
+
+dump            3 all custom 20000 dump.data id type x y z  # dump the Coordinates data file in custom format.
+
+
+fix             1 all nvt temp 1.5 1.5 1 # Equilibrate at higher temperatures (!!! Raise both the values after temp to the desired higher temperature)
+run             100000
