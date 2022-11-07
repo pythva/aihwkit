@@ -1,0 +1,29 @@
+8.2.1. 2d simulations¶
+Use the dimension command to specify a 2d simulation.
+
+Make the simulation box periodic in z via the boundary command. This is the default.
+
+If using the create_box command to define a simulation box, set the z dimensions narrow, but finite, so that the create_atoms command will fill the 3d simulation box with a single z plane of atoms - e.g.
+
+fix command:
+Set a fix that will be applied to a group of atoms. In LAMMPS, a “fix” is any operation that is applied to the system during timestepping or minimization. Examples include updating of atom positions and velocities due to time integration, controlling temperature, applying constraint forces to atoms, enforcing boundary conditions, computing diagnostics, etc. There are hundreds of fixes defined in LAMMPS and new ones can be added; see the Modify page for details.
+
+Fixes perform their operations at different stages of the timestep. If two or more fixes operate at the same stage of the timestep, they are invoked in the order they were specified in the input script.
+
+The ID of a fix can only contain alphanumeric characters and underscores.
+
+Fixes can be deleted with the unfix command.
+
+
+create atoms command
+This command creates atoms (or molecules) within the simulation box, either on a lattice, or a single atom (or molecule), or on a surface defined by a triangulated mesh, or a random collection of atoms (or molecules). It is an alternative to reading in atom coordinates explicitly via a read_data or read_restart command. A simulation box must already exist, which is typically created via the create_box command. Before using this command, a lattice must also be defined using the lattice command, unless you specify the single style with units = box or the random style. For the remainder of this doc page, a created atom or molecule is referred to as a “particle”.
+
+If created particles are individual atoms, they are assigned the specified atom type, though this can be altered via the basis keyword as discussed below. If molecules are being created, the type of each atom in the created molecule is specified in the file read by the molecule command, and those values are added to the specified atom type (e.g., if type = 2 and the file specifies atom types 1, 2, and 3, then each created molecule will have atom types 3, 4, and 5).
+
+For the box style, the create_atoms command fills the entire simulation box with particles on the lattice. If your simulation box is periodic, you should insure its size is a multiple of the lattice spacings, to avoid unwanted atom overlaps at the box boundaries. If your box is periodic and a multiple of the lattice spacing in a particular dimension, LAMMPS is careful to put exactly one particle at the boundary (on either side of the box), not zero or two.
+
+For the region style, a geometric volume is filled with particles on the lattice. This volume is what is both inside the simulation box and also consistent with the region volume. See the region command for details. Note that a region can be specified so that its “volume” is either inside or outside its geometric boundary. Also note that if a region is the same size as a periodic simulation box (in some dimension), LAMMPS does NOT implement the same logic described above for the box style, to insure exactly one particle at periodic boundaries. If this is desired, you should either use the box style, or tweak the region size to get precisely the particles you want.
+
+For the single style, a single particle is added to the system at the specified coordinates. This can be useful for debugging purposes or to create a tiny system with a handful of particles at specified positions.
+
+
