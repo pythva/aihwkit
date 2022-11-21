@@ -1,0 +1,124 @@
+LAMMPS (6 Apr 2015)
+# LAMMPS input file
+units real
+atom_style full
+bond_style harmonic
+angle_style harmonic
+pair_style lj/cut/tip4p/long 1 2 1 1 0.1546 12.0
+kspace_style pppm/tip4p 1.0e-4
+
+# ------------- System definition
+lattice fcc 4.04
+Lattice spacing in x,y,z = 4.04 4.04 4.04
+region box block -4 4 -4 4 -13 13
+create_box 5 box             bond/types 1             angle/types 1             extra/bond/per/atom 2             extra/angle/per/atom 1             extra/special/per/atom 2
+Created orthogonal box = (-16.16 -16.16 -52.52) to (16.16 16.16 52.52)
+  1 by 1 by 1 MPI processor grid
+
+
+
+# create the walls
+region rbotwall block -4 4 -4 4 -12 -10
+region rtopwall block -4 4 -4 4 10 12
+region rwall union 2 rbotwall rtopwall
+create_atoms 5 region rwall
+Created 1280 atoms
+
+
+
+# create the fluid
+region rliquid block -4 4 -4 4 -9 9
+molecule h2omol TIP4P2005.txt
+Read molecule h2omol:
+  3 atoms with 2 types
+  2 bonds with 1 types
+  1 angles with 1 types
+  0 dihedrals with 0 types
+  0 impropers with 0 types
+lattice sc 4.04
+Lattice spacing in x,y,z = 4.04 4.04 4.04
+create_atoms 0 region rliquid mol h2omol 482793
+Created 3648 atoms
+create_atoms    3 random 100 676 rliquid
+Created 100 atoms
+create_atoms    4 random 100 234 rliquid
+Created 100 atoms
+# settings
+# Parameter file
+mass 1 15.9994 # water
+mass 2 1.008 # water
+mass 3 28.990 # ion
+mass 4 35.453 # ion
+mass 5 26.9815 # wall
+
+pair_coeff 1 1 0.185199 3.1589 # water
+pair_coeff 2 2 0.0 0.0 # water
+pair_coeff 3 3 0.04690 2.4299 # ion
+pair_coeff 4 4 0.1500 4.04470 # ion
+pair_coeff 5 5 11.697 2.574 # wall
+
+bond_coeff 1 0 0.9572 # water
+
+angle_coeff 1 0 104.52 # water
+
+fix mynve all nve/limit 0.1
+# run
+run 10
+PPPM initialization ...
+  extracting TIP4P info from pair style
+  G vector (1/distance) = 0.217353
+  grid = 15 15 36
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.028671
+  estimated relative force accuracy = 8.6342e-05
+  using double precision FFTs
+  3d grid and FFT values/proc = 19844 8100
+Neighbor list info ...
+  1 neighbor list requests
+  update every 1 steps, delay 10 steps, check yes
+  master list distance cutoff = 14.3092
+Memory usage per processor = 15.0808 Mbytes
+Step Temp E_pair E_mol TotEng Press 
+       0            0 5.5765169e+14            0 5.5765169e+14 1.3939581e+15 
+      10    3940.0126   -103736.71            0   -43523.021    17676.792 
+Loop time of 0.691458 on 1 procs for 10 steps with 5128 atoms
+
+Pair  time (%) = 0.619261 (89.5588)
+Bond  time (%) = 0.00286174 (0.41387)
+Kspce time (%) = 0.0648878 (9.38419)
+Neigh time (%) = 0 (0)
+Comm  time (%) = 0.00263453 (0.38101)
+Outpt time (%) = 7.20024e-05 (0.0104131)
+Other time (%) = 0.00174069 (0.251743)
+
+Nlocal:    5128 ave 5128 max 5128 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:    18051 ave 18051 max 18051 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    1.47633e+06 ave 1.47633e+06 max 1.47633e+06 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 1476331
+Ave neighs/atom = 287.896
+Ave special neighs/atom = 1.42278
+Neighbor list builds = 0
+Dangerous builds = 0
+
+set type 3 charge 1.0
+  100 settings made for charge
+set type 4 charge -1.0
+  100 settings made for charge
+
+write_data system.data
+PPPM initialization ...
+  extracting TIP4P info from pair style
+  G vector (1/distance) = 0.217353
+  grid = 15 15 36
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.0312098
+  estimated relative force accuracy = 9.39873e-05
+  using double precision FFTs
+  3d grid and FFT values/proc = 19844 8100
+write_dump all atom dump.lammpstrj
+
+
