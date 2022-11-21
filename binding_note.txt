@@ -1,0 +1,44 @@
+Marshalling Data Types:
+
+The process of transforming the memory representation of an object to a data format suitable for storage or transmission. 
+
+For your purposes, marshalling is what the Python bindings are doing when they prepare data to move it from Python to C or vice versa. Python bindings need to do marshalling because Python and C store data in different ways. C stores data in the most compact form in memory possible. If you use an uint8_t, then it will only use 8 bits of memory total.
+
+In Python, on the other hand, everything is an object. This means that each integer uses several bytes in memory. How many will depend on which version of Python you’re running, your operating system, and other factors. This means that your Python bindings will need to convert a C integer to a Python integer for each integer passed across the boundary.
+
+Integers store counting numbers. Python stores integers with arbitrary precision, meaning that you can store very, very, large numbers. C specifies the exact sizes of integers. You need to be aware of data sizes when you’re moving between languages to prevent Python integer values from overflowing C integer variables.
+
+Floating-point numbers are numbers with a decimal place. Python can store much larger (and much smaller) floating-point numbers than C. This means that you’ll also have to pay attention to those values to ensure they stay in range.
+
+Complex numbers are numbers with an imaginary part. While Python has built-in complex numbers, and C has complex numbers, there’s no built-in method for marshalling between them. To marshal complex numbers, you’ll need to build a struct or class in the C code to manage them.
+
+Strings are sequences of characters. For being such a common data type, strings will prove to be rather tricky when you’re creating Python bindings. As with other data types, Python and C store strings in quite different formats. (Unlike the other data types, this is an area where C and C++ differ as well, which adds to the fun!) Each of the solutions you’ll examine have slightly different methods for dealing with strings.
+
+Boolean variables can have only two values. Since they’re supported in C, marshalling them will prove to be fairly straightforward.
+
+
+
+
+
+
+
+Mutable and Immutable Values
+In addition to all of these data types, you’ll also have to be aware of how Python objects can be mutable or immutable. C has a similar concept with function parameters when talking about pass-by-value or pass-by-reference. In C, all parameters are pass-by-value. If you want to allow a function to change a variable in the caller, then you need to pass a pointer to that variable.
+
+You might be wondering if you can get around the immutable restriction by simply passing an immutable object to C using a pointer. Unless you go to ugly and non-portable extremes, Python won’t give you a pointer to an object, so this just doesn’t work. If you want to modify a Python object in C, then you’ll need to take extra steps to achieve this. These steps will be dependent on which tools you use, as you’ll see below.
+
+So, you can add immutability to your checklist of items to consider as you create Python bindings. Your final stop on the grand tour of creating this checklist is how to handle the different ways in which Python and C deal with memory management.
+
+
+Memory
+C and Python manage memory differently. In C, the developer must manage all memory allocations and ensure they’re freed once and only once. Python takes care of this for you using a garbage collector.
+
+While each of these approaches has its advantages, it does add an extra wrinkle into creating Python bindings. You’ll need to be aware of where the memory for each object was allocated and ensure that it’s only freed on the same side of the language barrier.
+
+For example, a Python object is created when you set x = 3. The memory for this is allocated on the Python side and needs to be garbage collected. Fortunately, with Python objects, it’s quite difficult to do anything else. Take a look at the converse in C, where you directly allocate a block of memory:
+
+dynamic allocatoin: int* iPtr = (int*)malloc(sizeof(int));
+
+Using the invoke Tool
+invoke is the tool you’ll be using to build and test your Python bindings in this tutorial. It has a similar purpose to make but uses Python instead of Makefiles. You’ll need to install invoke in your virtual environment using pip:
+
