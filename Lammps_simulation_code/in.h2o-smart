@@ -1,0 +1,60 @@
+units           real
+atom_style      full 
+
+pair_style      lj/cut/tip4p/long 1 2 1 1 0.14714951 8
+bond_style      class2
+angle_style     harmonic
+kspace_style    pppm/tip4p 0.0001 
+boundary        p p p
+read_data       data.h2o-smart
+
+region          simbox block -0.160700 12.263700 0.088670 12.513070 -0.104992 12.319408
+
+pair_coeff  * 2  0.0     0.0
+pair_coeff  1 1  0.1852  3.1589022
+
+#q-tip4pf bond parameters
+bond_coeff      1 0.9419 607.19354  -1388.6516 1852.577
+angle_coeff     1 43.93  107.4
+
+timestep        0.5
+
+velocity        all create 300.0 1112 dist gaussian mom yes
+
+thermo          100
+thermo_style    custom step temp vol press density etotal
+
+mass 3 28.990 # ion
+mass 4 35.453 # ion
+
+set type 3 charge 1.0
+set type 4 charge -1.0
+
+pair_coeff 3 3 0.04690 2.4299 # ion
+pair_coeff 4 4 0.1500 4.04470 # ion
+# pallium pair_coeff 5 15.97 2.471
+
+create_atoms    3 random 5 676 simbox
+create_atoms    4 random 5 234 simbox
+
+
+# smart sampling with GLE: best efficiency on slow diffusive modes, 
+# and as good as possible on higher-frequency modes
+#fix             1 all gle 6 300.0 300.0 31415 smart.A
+fix mynve all nve/limit 0.1
+dump           1 all atom 100 h2o-smart.lammpstrj
+
+#dump           2 all image 1000 h2o-smart.*.jpg element element &
+#               zoom 1.4
+#dump_modify    2 pad 5 element O H
+
+#dump           3 all movie 100 movie.mp4 element element &
+#               zoom 1.4
+#dump_modify    3 pad 5 element O H
+
+run             10000
+unfix mynve
+
+fix 1 all nvt temp 300 300 1
+
+run 10000
