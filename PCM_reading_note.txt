@@ -1,0 +1,28 @@
+Phase-Change Memory Models for Deep Learning 
+Training and Inference 
+  Deep learning involves training brain-inspired deep neural networks (DNN) to extract features from inputs to generate a desired response. The basic computing unit in a DNN performs weighted summation of features (neuron responses) from previous layers and apply a non-linearity to generate a new set of features for the next layer. The weights between neuron layers can be implemented using a crossbar array of non-volatile analog memory devices [1]–[5] (Fig.1). This ded- icated hardware implementation computes the weighted sum- mation as a matrix-vector multiplication in a single time step without intermediate data movements. Different approaches can be devised to utilize this computational memory. The DNN weights realized using analog memory devices may be trained gradually using cumulative conductance updates (on- chip training). Typically, the DNNs are trained using gradient descent based supervised learning algorithms. 
+
+Phase-change memory (PCM) is a mature non-volatile memory technology which shows multi-level conductance states and gradual updates and is a suitable candidate for computational memory. The conductance of PCM is modu- lated by altering the amount of amorphous volume (of higher resistivity) inside a poly-crystalline chalcogenide through a melt-quench or crystal growth process driven by Joule heating [7]. 
+
+
+Programming of such nano-scale memory devices is non- linear and stochastic and the programmed states show con- ductance drift and read noise. Accurate models capturing the essential statistics are necessary to assess the impact of the device behavior in the training and inference of different deep learning models. In this paper, we discuss computationally simple statistical models based on the characterization of a large number of doped-Ge2 Sb2 Te5 (d-GST) PCM devices from a prototype chip fabricated in 90 nm technology [8]. The PCM devices have access transistors in series and individual conductance values are read using an 8-bit ADC integrated on-chip. We present effective models for the programming and temporal characteristics of PCM which can be used to evaluate deep learning systems based on computational memory. 
+
+To evaluate the gradual conductance increment behavior of PCM, 10,000 devices were initialized to a distribution around 0.1μS and were subjected to 20 SET pulses of 90μA and 50ns duration. Device conductance is read 50 times after each programming event. The conductance update statistics are evaluated based on the 50th read (Fig.3a). 
+
+The model response is shown in Fig.3a, where the mean and the standard deviation of the cumulative conductance evolution agree with the device response very well. Note that the model predicts the conductance response of the device after a time t0 = 38.6s (50th read) after each programming event. The conductance at other points in time can be estimated by adding drift and read noise to the model response [9] (see also Section II-B). 
+
+Factors that related to the performance of the network 
+
+A. Iterative programming 
+The melt-quench region of the programming curve (right- hand side in Fig.2a) can be used to iteratively write the conductance values to PCM. Based on a target conductance a RESET pulse is applied, the conductance state is read and the difference between observed and desired conductance values is used to adjust the subsequent pulse amplitudes until the observed value is within an error tolerance [11]. Though ide- ally we may achieve arbitrary precision with such an iterative scheme, the conductance drift and 1/f noise characteristics cause the conductance values to deviate from the initially programmed states. Fig.2c shows the cumulative distribution of conductance states iteratively programmed using 500ns pulses. The conductance values reported are based on a read 23μs after the last programming pulse and has an average standard deviation of 1.23 μS around their mean values. 
+
+B. Conductance drift 
+The conductance of the PCM is observed to decrease over time which is typically attributed to structural relaxation of the phase configuration formed as a result of each programming event [12]. This conductance drift is well captured by the empirical relation [13], 
+
+C. Read noise 
+Low-frequency noise could be particularly detrimental to long-term inference performance. While 1/fγ noise (γ = 0.9 to 1.1) and Random Telegraph Noise have been observed in PCM, for the modeling we assume an ideal 1/f behavior [14]. We use read noise estimation using samples from a fixed duration (bandwidth) to estimate the fluctuation due to read noise from the time of programming to the time of inference. 
+
+D. Inference simulation using PCM models 
+To verify the models’ ability to capture the inference perfor- mance using PCM hardware when perturbed by conductance drift and read noise, we compare its response with experi- mentally observed test accuracies over time from the 2-layer MLP performing MNIST digit classification and a convolu- tion neural network ResNet20 performing CIFAR-10 image classification [5]. In the inference experiments, the weights trained in floating-point precision in software are iteratively programmed to PCM. The device conductance evolution is measured and is used to compute the test accuracy of the networks over a time span of 105s. 
+
+
