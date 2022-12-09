@@ -1,0 +1,57 @@
+Notes for tip4p model and corresponding force field
+
+force field
+
+A force field has 2 parts: the formulas that define it and the coefficients used for a particular system. Here we only discuss formulas implemented in LAMMPS that correspond to formulas commonly used in the CHARMM, AMBER, COMPASS, and DREIDING force fields. Setting coefficients is done either from special sections in an input data file via the read_data command or in the input script with commands like pair_coeff or bond_coeff and so on. See the Tools doc page for additional tools that can use CHARMM, AMBER, or Materials Studio generated files to assign force field coefficients and convert their output into LAMMPS input.
+CHARMM have most of the simulations parameter for the organic component
+
+
+tip4p
+The four-point TIP4P rigid water model extends the traditional three-point TIP3P model by adding an additional site, usually massless, where the charge associated with the oxygen atom is placed. This site M is located at a fixed distance away from the oxygen along the bisector of the HOH bond angle. A bond style of harmonic and an angle style of harmonic or charmm should also be used.
+
+For the TIP4P/2005 model (J Chem Phys, 123, 234505 (2005); https://doi.org/10.1063/1.2121687), these values can be used:
+
+O mass = 15.9994
+H mass = 1.008
+O charge = -1.1128
+H charge = 0.5564
+r of OH bond = 0.9572
+degree of HOH angle = 104.52
+OM distance = 0.1546
+LJ of O-O = 0.1852
+LJ of O-O = 3.1589
+LJ of OH, HH = 0.0
+Coulomb cutoff = 8.5
+
+reference for tip4p model A general purpose model for the condensed phases of water: TIP4P/2005
+
+In TIP4P there is a single Lennard-Jones (LJ) interaction site at the oxygen and electrostatic charges at the hydrogens while the negative charge is placed in a site M along the bisector of the H–O–H angle and coplanar with the oxygen and hydrogens. In our simulations, the LJ potential was truncated at 8.5Å. Standard long-range corrections to the LJ energy were added. The Ewald summation technique has been employed for the calculation of the long-range electrostatic forces. For the real space cutoff we also employed 8.5Å.
+
+The number of molecules for the different ice phases was chosen so as to fit at least twice the cut-off distance in each direction. Unless otherwise stated, the simulations were carried out using the Monte Carlo method at constant pressure and temperature (NpT). Isotropic NpT simulations are adequate for the liquid phase while anisotropic Monte Carlo simulations (Parrinello-Rahman-type)29,30 are required for the solid phases. For the calculation of the static dielectric constant and the self-diffusion coefficient we have used the molecular-dynamics package DLPOLY.31 The water molecules are treated as rigid bodies with orientations defined in terms of quaternions. 
+
+The performance of TIP4P/Ew is excellent for many properties. But the poor prediction of the phase diagram indicates that it does not account for the distortions in the hydrogen bond network. A possible explanation is the low value of its quadrupole moments which is compensated with a larger dipole. In this way the averaged effect of the electrostatic interactions may be correct but the angular dependence is probably not so good. A deeper investigation of the reasons of the overstability of ice II for this model could throw some light on this point. It is also to be pointed out that the differences in the structural predictions of several models for ice II are considerably larger than for other ice forms (see Ref. 52). Notice finally that—apart of this serious failure of TIP4P/Ew—, for most of the properties investigated, the predictions of TIP4P/2005 are more accurate. In fact, the only property for which TIP4P/Ew performs clearly better is the enthalpy of vaporization. The TIP4P/Ew result for the static dielectric constant is slightly better than that for TIP4P/2005 while both models perform similarly for the self-diffusion coefficient. For the rest of properties (densities at normal pressure, 𝑇𝑚𝑑, expansivity, compressibility, densities of the ice polymorphs, melting properties, phase diagram and heat capacity) the results of TIP4P/2005 are clearly better than those for TIP4P/Ew.
+
+
+pair_style lj/cut/tip4p/long
+
+The lj/cut/tip4p styles compute the standard 12/6 Lennard-Jones potential, given by
+w(r) = −A/r6 + B/r12
+
+They add Coulombic pairwise interactions given by
+E = C*q1*q2/Ar
+
+where  is an energy-conversion constant,  and  are the charges on the 2 atoms, and  is the dielectric constant which can be set by the dielectric command. If one cutoff is specified in the pair_style command, it is used for both the LJ and Coulombic terms. If two cutoffs are specified, they are used as cutoffs for the LJ and Coulombic terms respectively.
+
+These accelerated styles are part of the GPU, INTEL, KOKKOS, OPENMP, and OPT packages, respectively. They are only enabled if LAMMPS was built with those packages. See the Build package page for more info.
+
+You can specify the accelerated styles explicitly in your input script by including their suffix, or you can use the -suffix command-line switch when you invoke LAMMPS, or you can use the suffix command in your input script.
+
+
+Fix efield
+
+Add a force F = qE to each charged atom in the group due to an external electric field being applied to the system. If the system contains point-dipoles, also add a torque on the dipoles due to the external electric field.
+
+For charges, any of the 3 quantities defining the E-field components can be specified as an equal-style or atom-style variable, namely ex, ey, ez. If the value is a variable, it should be specified as v_name, where name is the variable name. In this case, the variable will be evaluated each timestep, and its value used to determine the E-field component.
+
+The energy keyword is not allowed if the added field is a constant vector (ex,ey,ez), with all components defined as numeric constants and not as variables. This is because LAMMPS can compute the energy for each charged particle directly as E = -x dot qE = -q (x*ex + y*ey + z*ez), so that -Grad(E) = F. Similarly for point-dipole particles the energy can be computed as E = -mu dot E = -(mux*ex + muy*ey + muz*ez).
+
