@@ -1,0 +1,78 @@
+units           real
+atom_style      full 
+
+pair_style      lj/cut/tip4p/long 1 2 1 1 0.14714951 8
+bond_style      class2
+angle_style     harmonic
+kspace_style    pppm/tip4p 0.0001
+boundary        p p p
+
+read_data       data.h2o-smart
+region          simbox block -0.160700 12.263700 0.088670 12.513070 -0.104992 12.319408 #water reigion
+
+region rbotwall block -0.160700 12.263700 0.088670 12.513070  12.319408 16.319408
+region rtopwall block -0.160700 12.263700 0.088670 12.513070  -4.104992 -0.104992 
+region rwall union 2 rbotwall rtopwall
+lattice fcc 4.04
+create_atoms 5 region rbotwall
+lattice fcc 4.04
+create_atoms 6 region rtopwall
+
+group wallp region rwall
+
+#fix top wallp freeze
+
+#fix zrest wallp spring/self 1
+
+#fix freeze wallp setforce 0.0 0.0 0.0
+
+pair_coeff  * 2  0.0     0.0
+pair_coeff  1 1  0.1852  3.1589022
+pair_coeff 3 3 0.04690 2.4299 # ion
+pair_coeff 4 4 0.1500 4.04470 # ion
+pair_coeff 5 5 15.97 2.471
+pair_coeff 6 6 15.97 2.471
+#set type 3 charge 1.0
+#set type 4 charge -1.0
+#set type 5 charge 1.0
+#set type 6 charge -1.0
+
+create_atoms    3 random 7 676 simbox
+create_atoms    4 random 7 234 simbox
+
+
+#q-tip4pf bond parameters
+bond_coeff      1 0.9419 607.19354  -1388.6516 1852.577
+angle_coeff     1 43.93  107.4
+
+timestep        0.5
+
+velocity        all create 300.0 1112 dist gaussian mom yes
+
+thermo          100
+thermo_style    custom step temp vol press density etotal
+
+# smart sampling with GLE: best efficiency on slow diffusive modes, 
+# and as good as possible on higher-frequency modes
+#fix             1 all gle 6 300.0 300.0 31415 smart.A
+
+#dump           1 all atom 100 h2o-smart.lammpstrj
+
+#dump           2 all image 1000 h2o-smart.*.jpg element element &
+#               zoom 1.4
+#dump_modify    2 pad 5 element O H
+fix freeze wallp setforce 0.0 0.0 0.0
+#dump           3 all movie 100 movie.mp4 element element &
+#               zoom 1.4
+#dump_modify    3 pad 5 element O H
+fix mynve all nve/limit 0.1
+#fix 1 all nvt temp 300 300 1
+fix freeze wallp setforce 0.0 0.0 0.0
+dump           1 all atom 100 h2o-smart.lammpstrj
+
+run             10000
+#unfix mynve
+
+#fix 1 all nvt temp 300 300 1
+#dump           1 all atom 100 h2o-smart.lammpstrj
+#run 10000
