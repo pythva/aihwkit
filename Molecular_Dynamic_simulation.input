@@ -1,0 +1,37 @@
+units		metal  # Lj implies quantities are unitless (internal units)
+atom_style	atomic # Defining attributes associated with the atoms
+boundary	s p p
+#lattice		fcc 3.639 # Defining a lattice of type simple cubic with lattice parameter 1.2
+#region		simbox block 0 6 0 6 0 6 units lattice # Creating a region called simbox within the limits 0 and 6 and each direction. To format of the limits is as follows xlo xhi ylo yhi zlo zhi
+#create_box	1 simbox  # Create the bounding simulation box around the region simbox
+#create_atoms	1 box  # Create the atoms in the simulation box
+read_data       10Cu_sample_rlx.data # reading in the coordinates
+#mass		1 63.546     # Defining the mass of the atoms
+
+
+pair_style	eam/alloy # Defining the lj potential with a interaction cutoff of 4
+pair_coeff	* * FeCuNi.eam.alloy Fe Cu # Defining the coefficients of the interaction between types of atoms
+
+#neighbor	0.3 bin
+#neigh_modify	every 20 delay 0 check no
+
+#velocity        all create 300 87287 # Defining the velocity of the atoms to set the temperature. The final number is a random seed required for the probability distribution while the quantity before that is the temperature
+
+#compute          msdcal all msd #Compute msd
+#compute 	myRDF all rdf 50 # Compute rdf
+#fix 		4 all ave/time 100 100 20000 c_myRDF file RDF.data mode vector # output average rdf every 20000 timesteps over 100 frames with a gap of 100 
+#fix             5 all ave/time 1 1 1 c_msdcal[4] file MSD.data mode scalar
+thermo          10
+thermo_style    custom step temp ke pe etotal vol press pxx pyy pzz  lx ly lz enthalpy
+timestep        0.001 # timestep is in picoseconds for units metal
+
+dump            3 all custom 400 dump_MD.data id type x y z # Coordinates data file
+
+#fix             6 all atom/swap 1 1 29494 300 ke no types 1 2
+fix             6 all nvt temp 300 300 1 # nvt ensemble. The first number after temp is the initial temperature, the second temperature after temp is the final ensemble temperature and the third number is the temperature damping factor Q.
+
+run             40000
+unfix           6
+
+
+write_data	10Cu_sample_afterMC_fs.data
